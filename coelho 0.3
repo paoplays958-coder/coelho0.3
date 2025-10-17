@@ -1,112 +1,339 @@
--- Coelho Hub v0.2 | by paozin
-local coelholib = loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/Library-ui/main/Redzhubui"))()
-local win = coelholib:CreateWindow("Coelho Hub v0.2 | by paozin")
+-- Carrega a biblioteca
+local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/Library-ui/refs/heads/main/Redzhubui"))()
 
--- Aba Menu
-local menu = win:CreateTab("Menu", 4483362458)
-menu:CreateLabel("Bem-vindo ao Coelho Hub!")
-menu:CreateLabel("Versão: 0.2")
-menu:CreateButton("Ir para o Discord", function()
-    setclipboard("https://discord.gg/pVsWE7WszB")
-    coelholib:Notification("Coelho Hub", "Link do Discord copiado!", "Ok")
-end)
-menu:CreateLabel("Script feito por paoplays958-coder")
+-- Cria a janela principal
+local Window = redzlib:MakeWindow({
+    Title = "Meu Hub",
+    SubTitle = "v1.0",
+    SaveFolder = "MeuHubConfig"
+})
 
--- Fly
-local fly = win:CreateTab("Fly", 4483362458)
-local flying = false
-local flyspeed = 50
-fly:CreateToggle("Ativar Fly", function(state)
-    flying = state
-    local plr = game.Players.LocalPlayer
-    local char = plr.Character or plr.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart")
-    if flying then
-        local bv = Instance.new("BodyVelocity", hrp)
-        bv.Name = "CoelhoFly"
-        bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-        bv.Velocity = Vector3.new()
-        local conn; conn = game:GetService("RunService").Heartbeat:Connect(function()
-            if not flying or not bv.Parent then conn:Disconnect() end
-            local cam = workspace.CurrentCamera
-            local dir = Vector3.new()
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then dir = dir + cam.CFrame.LookVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then dir = dir - cam.CFrame.LookVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then dir = dir - cam.CFrame.RightVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) then dir = dir + Vector3.new(0,1,0) end
-            if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftShift) then dir = dir - Vector3.new(0,1,0) end
-            if dir.Magnitude > 0 then dir = dir.Unit end
-            bv.Velocity = dir * flyspeed
-        end)
-    else
-        if hrp:FindFirstChild("CoelhoFly") then hrp.CoelhoFly:Destroy() end
-    end
-end)
-fly:CreateSlider("Velocidade do Fly", 10, 200, 50, function(val)
-    flyspeed = val
-end)
+-- ========================================
+-- PRINCIPAL
+-- ========================================
+local TabPrincipal = Window:MakeTab({
+    Name = "Principal",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
--- Speed
-local speed = win:CreateTab("Speed", 4483362458)
-local speedon = false
-local walkval = 16
-speed:CreateToggle("Ativar Speed", function(state)
-    speedon = state
-    local h = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if h then
-        h.WalkSpeed = state and walkval or 16
-    end
-end)
-speed:CreateSlider("WalkSpeed", 16, 200, 16, function(v)
-    walkval = v
-    local h = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if h and speedon then
-        h.WalkSpeed = walkval
-    end
-end)
+TabPrincipal:AddDiscordInvite({
+    Name = "teste1",
+    Description = "Join server",
+    Logo = "rbxassetid://18751483361",
+    Invite = "https://discord.gg/U4Ekd4dV6m",
+})
 
--- Jump
-local jump = win:CreateTab("Jump", 4483362458)
-local jumpon = false
-local jumpval = 50
-jump:CreateToggle("Ativar Jump", function(state)
-    jumpon = state
-    local h = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if h then
-        h.JumpPower = state and jumpval or 50
-    end
-end)
-jump:CreateSlider("JumpPower", 50, 300, 50, function(v)
-    jumpval = v
-    local h = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if h and jumpon then
-        h.JumpPower = jumpval
-    end
-end)
+TabPrincipal:AddSection({Name = "Bem-vindo"})
+TabPrincipal:AddLabel("Hub carregado com sucesso")
 
--- Click TP
-local tp = win:CreateTab("Click TP", 4483362458)
-local toolActive = false
-tp:CreateButton("Pegar Click TP", function()
-    if toolActive then return end
-    toolActive = true
-    local tool = Instance.new("Tool")
-    tool.RequiresHandle = true
-    tool.Name = "Click TP"
-    local handle = Instance.new("Part")
-    handle.Size = Vector3.new(1,1,2)
-    handle.Transparency = 1
-    handle.Name = "Handle"
-    handle.Parent = tool
-    tool.Activated:Connect(function()
-        local mouse = game.Players.LocalPlayer:GetMouse()
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            char.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position) + Vector3.new(0,3,0)
+TabPrincipal:AddButton({
+    Name = "Teste",
+    Callback = function()
+        redzlib:MakeNotification({
+            Name = "Sucesso",
+            Content = "Botão funcionando",
+            Time = 3
+        })
+    end
+})
+
+-- ========================================
+-- CLICK TP
+-- ========================================
+local TabClickTP = Window:MakeTab({
+    Name = "Click TP",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local ClickTPTool = nil
+
+TabClickTP:AddSection({Name = "Teleporte"})
+
+TabClickTP:AddButton({
+    Name = "Ativar Click TP",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local backpack = player:WaitForChild("Backpack")
+        
+        if ClickTPTool then
+            ClickTPTool:Destroy()
         end
-    end)
-    tool.Parent = game.Players.LocalPlayer.Backpack
-    coelholib:Notification("Coelho Hub", "Ferramenta Click TP adicionada no inventário!", "OK")
+        
+        ClickTPTool = Instance.new("Tool")
+        ClickTPTool.Name = "Click TP"
+        ClickTPTool.RequiresHandle = false
+        ClickTPTool.CanBeDropped = false
+        
+        ClickTPTool.Activated:Connect(function()
+            local mouse = player:GetMouse()
+            local character = player.Character
+            
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local targetPosition = mouse.Hit.Position
+                character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 3, 0))
+            end
+        end)
+        
+        ClickTPTool.Parent = backpack
+        
+        redzlib:MakeNotification({
+            Name = "Ativado",
+            Content = "Equipe e clique para teleportar",
+            Time = 4
+        })
+    end
+})
+
+TabClickTP:AddButton({
+    Name = "Desativar Click TP",
+    Callback = function()
+        if ClickTPTool then
+            ClickTPTool:Destroy()
+            ClickTPTool = nil
+            redzlib:MakeNotification({
+                Name = "Desativado",
+                Content = "Click TP removido",
+                Time = 3
+            })
+        end
+    end
+})
+
+-- ========================================
+-- SPEED
+-- ========================================
+local TabSpeed = Window:MakeTab({
+    Name = "Speed",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local SpeedEnabled = false
+local CurrentSpeed = 16
+local OriginalSpeed = 16
+
+local function ApplySpeed()
+    local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        if SpeedEnabled then
+            player.Character.Humanoid.WalkSpeed = CurrentSpeed
+        else
+            player.Character.Humanoid.WalkSpeed = OriginalSpeed
+        end
+    end
+end
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if SpeedEnabled then
+        ApplySpeed()
+    end
 end)
-tp:CreateLabel("Equipe a ferramenta e clique para teleportar onde quiser.")
+
+TabSpeed:AddSection({Name = "Velocidade"})
+
+TabSpeed:AddToggle({
+    Name = "Ativar",
+    Default = false,
+    Callback = function(Value)
+        SpeedEnabled = Value
+        ApplySpeed()
+        
+        if Value then
+            redzlib:MakeNotification({
+                Name = "Speed ON",
+                Content = "Velocidade: " .. CurrentSpeed,
+                Time = 2
+            })
+        else
+            redzlib:MakeNotification({
+                Name = "Speed OFF",
+                Content = "Velocidade normal",
+                Time = 2
+            })
+        end
+    end
+})
+
+TabSpeed:AddSlider({
+    Name = "Valor",
+    Min = 0,
+    Max = 100,
+    Default = 16,
+    Increment = 1,
+    Callback = function(Value)
+        CurrentSpeed = Value
+        if SpeedEnabled then
+            ApplySpeed()
+        end
+    end
+})
+
+TabSpeed:AddSection({Name = "Presets"})
+
+TabSpeed:AddButton({
+    Name = "Normal (16)",
+    Callback = function()
+        CurrentSpeed = 16
+        ApplySpeed()
+    end
+})
+
+TabSpeed:AddButton({
+    Name = "Rápido (50)",
+    Callback = function()
+        CurrentSpeed = 50
+        ApplySpeed()
+    end
+})
+
+TabSpeed:AddButton({
+    Name = "Muito Rápido (100)",
+    Callback = function()
+        CurrentSpeed = 100
+        ApplySpeed()
+    end
+})
+
+-- ========================================
+-- PLAYER
+-- ========================================
+local TabPlayer = Window:MakeTab({
+    Name = "Player",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+TabPlayer:AddSection({Name = "Modificações"})
+
+TabPlayer:AddToggle({
+    Name = "God Mode",
+    Default = false,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            if Value then
+                player.Character.Humanoid.MaxHealth = math.huge
+                player.Character.Humanoid.Health = math.huge
+            else
+                player.Character.Humanoid.MaxHealth = 100
+                player.Character.Humanoid.Health = 100
+            end
+        end
+    end
+})
+
+local InfiniteJumpEnabled = false
+TabPlayer:AddToggle({
+    Name = "Pulo Infinito",
+    Default = false,
+    Callback = function(Value)
+        InfiniteJumpEnabled = Value
+    end
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid:ChangeState("Jumping")
+        end
+    end
+end)
+
+TabPlayer:AddSlider({
+    Name = "Altura do Pulo",
+    Min = 50,
+    Max = 200,
+    Default = 50,
+    Increment = 5,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.JumpPower = Value
+        end
+    end
+})
+
+-- ========================================
+-- TELEPORTS
+-- ========================================
+local TabTP = Window:MakeTab({
+    Name = "Teleports",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+TabTP:AddSection({Name = "Locais"})
+
+TabTP:AddButton({
+    Name = "Spawn",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(0, 50, 0)
+        end
+    end
+})
+
+TabTP:AddButton({
+    Name = "Céu",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(0, 500, 0)
+        end
+    end
+})
+
+-- ========================================
+-- MISC
+-- ========================================
+local TabMisc = Window:MakeTab({
+    Name = "Misc",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+TabMisc:AddSection({Name = "Configurações"})
+
+TabMisc:AddBind({
+    Name = "Toggle UI",
+    Default = Enum.KeyCode.RightControl,
+    Hold = false,
+    Callback = function()
+        redzlib:ToggleUI()
+    end
+})
+
+TabMisc:AddButton({
+    Name = "Resetar Personagem",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.Health = 0
+        end
+    end
+})
+
+TabMisc:AddButton({
+    Name = "Recarregar Script",
+    Callback = function()
+        redzlib:MakeNotification({
+            Name = "Recarregando",
+            Content = "Execute o script novamente",
+            Time = 3
+        })
+    end
+})
+
+-- Notificação inicial
+redzlib:MakeNotification({
+    Name = "Carregado",
+    Content = "Hub iniciado com sucesso",
+    Time = 4
+})
+
+-- Inicializa
+redzlib:Init()
